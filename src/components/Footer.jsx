@@ -26,7 +26,7 @@ const Footer = () => {
 
       <Box sx={{ mt: 2 }}>
         <MuiLink
-          href="https://github.com/CodeCraftsmanRohit"
+          href="https://github.com/CodeCraftsmanRohit/Clean_India"
           target="_blank"
           rel="noopener noreferrer"
           sx={{

@@ -1,5 +1,6 @@
 # 🚯 Clean India - Garbage Reporting System
 
+[![Live Protoype](https://img.shields.io/badge/Demo-Live%20Site-green?style=for-the-badge)](https://clean-india-prototype.netlify.app/)
 
 A citizen-driven platform to report garbage in your surroundings and help keep communities clean. Users can submit complaints with real-time location and images, bridging the gap between citizens and municipal bodies for quicker waste resolution.
 
