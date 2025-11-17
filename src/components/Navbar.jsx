@@ -12,22 +12,39 @@ import {
   Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
 
-  const navLinks = [
-    { label: "About", path: "/about" },
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+    setOpen(false);
+  };
+
+  const authLinks = [
+    { label: "Submit Complaint", path: "/submit" },
     { label: "History", path: "/pasthistory" },
     { label: "Profile", path: "/profile" },
-    { label: "Logout", path: "/" },
+    { label: "About", path: "/about" },
   ];
+
+  const guestLinks = [
+    { label: "About", path: "/about" },
+    { label: "Login", path: "/login" },
+    { label: "Register", path: "/register" },
+  ];
+
+  const navLinks = isAuthenticated ? authLinks : guestLinks;
 
   return (
     <>
-       <AppBar position="sticky" sx={{
+      <AppBar position="sticky" sx={{
         background: 'linear-gradient(45deg, #1b5e20 30%, #388e3c 90%)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
         py: 1
@@ -36,7 +53,7 @@ const Navbar = () => {
           <Typography
             variant="h6"
             component={Link}
-            to="/"
+            to={isAuthenticated ? "/" : "/login"}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -51,7 +68,7 @@ const Navbar = () => {
           </Typography>
 
           {/* Desktop Navigation */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1, alignItems: 'center' }}>
             {navLinks.map(({ label, path }) => (
               <Button
                 key={label}
@@ -71,6 +88,21 @@ const Navbar = () => {
                 {label}
               </Button>
             ))}
+            {isAuthenticated && (
+              <Button
+                onClick={handleLogout}
+                sx={{
+                  color: 'white',
+                  borderRadius: 2,
+                  px: 2,
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.15)'
+                  }
+                }}
+              >
+                Logout
+              </Button>
+            )}
           </Box>
 
           {/* Hamburger for Mobile */}
@@ -106,6 +138,11 @@ const Navbar = () => {
                 <ListItemText primary={label} />
               </ListItem>
             ))}
+            {isAuthenticated && (
+              <ListItem button onClick={handleLogout}>
+                <ListItemText primary="Logout" />
+              </ListItem>
+            )}
           </List>
         </Box>
       </Drawer>

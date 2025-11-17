@@ -5,12 +5,16 @@ import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
+
+// Import react-toastify CSS
+import 'react-toastify/dist/ReactToastify.css';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-     <ThemeProvider theme={theme}>
-  <App />
-</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   </StrictMode>
 );
