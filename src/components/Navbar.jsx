@@ -10,6 +10,7 @@ import {
   ListItemText,
   Box,
   Button,
+  Chip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -27,9 +28,26 @@ const Navbar = () => {
     setOpen(false);
   };
 
-  const authLinks = [
+  // Get home path based on user role
+  const getHomePath = () => {
+    if (!isAuthenticated) return "/login";
+    if (user?.role === 'admin' || user?.role === 'moderator') return "/admin/dashboard";
+    return "/submit";
+  };
+
+  // User links for regular users
+  const userLinks = [
     { label: "Submit Complaint", path: "/submit" },
-    { label: "History", path: "/pasthistory" },
+    { label: "History", path: "/history" },
+    { label: "Profile", path: "/profile" },
+    { label: "About", path: "/about" },
+  ];
+
+  // Admin links for admin and moderators
+  const adminLinks = [
+    { label: "Dashboard", path: "/admin/dashboard" },
+    { label: "Complaints", path: "/admin/complaints" },
+    { label: "Users", path: "/admin/users" },
     { label: "Profile", path: "/profile" },
     { label: "About", path: "/about" },
   ];
@@ -40,7 +58,37 @@ const Navbar = () => {
     { label: "Register", path: "/register" },
   ];
 
-  const navLinks = isAuthenticated ? authLinks : guestLinks;
+  // Determine which links to show based on authentication and role
+  const getNavLinks = () => {
+    if (!isAuthenticated) return guestLinks;
+
+    if (user?.role === 'admin' || user?.role === 'moderator') {
+      return adminLinks;
+    }
+
+    return userLinks;
+  };
+
+  const navLinks = getNavLinks();
+
+  const getRoleChip = () => {
+    if (!user?.role || user.role === 'user') return null;
+
+    const roleColors = {
+      admin: 'error',
+      moderator: 'warning'
+    };
+
+    return (
+      <Chip
+        label={user.role}
+        color={roleColors[user.role]}
+        size="small"
+        sx={{ ml: 1, color: 'white', borderColor: 'white' }}
+        variant="outlined"
+      />
+    );
+  };
 
   return (
     <>
@@ -53,7 +101,7 @@ const Navbar = () => {
           <Typography
             variant="h6"
             component={Link}
-            to={isAuthenticated ? "/" : "/login"}
+            to={getHomePath()} // ✅ Use dynamic home path
             sx={{
               display: "flex",
               alignItems: "center",
@@ -65,6 +113,7 @@ const Navbar = () => {
             }}
           >
             Clean India
+            {getRoleChip()}
           </Typography>
 
           {/* Desktop Navigation */}
@@ -126,6 +175,20 @@ const Navbar = () => {
           onClick={() => setOpen(false)}
           onKeyDown={() => setOpen(false)}
         >
+          <Box sx={{ px: 2, pb: 1, borderBottom: 1, borderColor: 'divider' }}>
+            <Typography variant="h6" color="primary">
+              Clean India
+            </Typography>
+            {user?.role && user.role !== 'user' && (
+              <Chip
+                label={user.role}
+                color={user.role === 'admin' ? 'error' : 'warning'}
+                size="small"
+                sx={{ mt: 1 }}
+              />
+            )}
+          </Box>
+
           <List>
             {navLinks.map(({ label, path }) => (
               <ListItem

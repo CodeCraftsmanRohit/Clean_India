@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { Box } from "@mui/material";
 import { useAuth, AuthProvider } from "./context/AuthContext";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import Navbar from "./components/Navbar";
 import ProfilePage from "./pages/ProfilePage";
@@ -14,21 +15,36 @@ import Register from "./pages/Register";
 import About from "./pages/About";
 import Footer from "./components/Footer";
 import Verification from "./pages/Verification";
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ComplaintsManagement from './pages/admin/ComplaintsManagement';
+import UsersManagement from './pages/admin/UsersManagement';
+
+
+
 
 // Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+  const { isAuthenticated, loading, user } = useAuth();
 
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <Box>Loading...</Box>
+        <CircularProgress />
       </Box>
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (adminOnly && user?.role !== 'admin' && user?.role !== 'moderator') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return children;
 };
+
 
 const AppContent = () => {
   return (
@@ -79,6 +95,23 @@ const AppContent = () => {
                 <Verification />
               </ProtectedRoute>
             } />
+
+             {/* Admin Routes */}
+  <Route path="/admin/dashboard" element={
+    <ProtectedRoute adminOnly={true}>
+      <AdminDashboard />
+    </ProtectedRoute>
+  } />
+  <Route path="/admin/complaints" element={
+    <ProtectedRoute adminOnly={true}>
+      <ComplaintsManagement />
+    </ProtectedRoute>
+  } />
+  <Route path="/admin/users" element={
+    <ProtectedRoute adminOnly={true}>
+      <UsersManagement />
+    </ProtectedRoute>
+  } />
 
             {/* Default redirect */}
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -49,50 +49,66 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/api/user/data`, {
+ const fetchUserData = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/user/data`, {
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
+        console.log('User data:', data.userData); // Debug log
+        setUser(data.userData);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+  }
+};
+const login = async (email, password) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include'
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setIsAuthenticated(true);
+      await fetchUserData();
+      toast.success('Login successful!');
+
+      // Redirect based on role after login
+      const userResponse = await fetch(`${BASE_URL}/api/user/data`, {
         credentials: 'include'
       });
+      const userData = await userResponse.json();
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setUser(data.userData);
+      if (userData.success) {
+        setUser(userData.userData);
+        if (userData.userData.role === 'admin' || userData.userData.role === 'moderator') {
+          window.location.href = '/admin/dashboard';
+        } else {
+          window.location.href = '/';
         }
       }
-    } catch (error) {
-      console.error('Failed to fetch user data:', error);
+
+      return { success: true };
+    } else {
+      toast.error(data.message);
+      return { success: false, message: data.message };
     }
-  };
-
-  const login = async (email, password) => {
-    try {
-      const response = await fetch(`${BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setIsAuthenticated(true);
-        await fetchUserData();
-        toast.success('Login successful!');
-        return { success: true };
-      } else {
-        toast.error(data.message);
-        return { success: false, message: data.message };
-      }
-    } catch (error) {
-      toast.error('Login failed. Please try again.');
-      return { success: false, message: 'Network error' };
-    }
-  };
+  } catch (error) {
+    toast.error('Login failed. Please try again.');
+    return { success: false, message: 'Network error' };
+  }
+};
 
   const register = async (name, email, password) => {
     try {

@@ -81,18 +81,23 @@ const ProfilePage = () => {
             </Box>
           )}
 
-          <Box mt={2}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Email:</Typography>
-            <Typography variant="body2" gutterBottom sx={{ mb: 2 }}>{user.email}</Typography>
+<Box mt={2}>
+  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Email:</Typography>
+  <Typography variant="body2" gutterBottom sx={{ mb: 2 }}>{user.email}</Typography>
 
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Status:</Typography>
-            <Typography variant="body2" gutterBottom>
-              {user.isAccountVerified
-                ? "Your account is fully verified and active"
-                : "Please verify your email to access all features"
-              }
-            </Typography>
-          </Box>
+  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Role:</Typography>
+  <Typography variant="body2" gutterBottom sx={{ mb: 2 }}>
+    {user.role?.charAt(0).toUpperCase() + user.role?.slice(1) || 'User'}
+  </Typography>
+
+  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Status:</Typography>
+  <Typography variant="body2" gutterBottom>
+    {user.isAccountVerified
+      ? "Your account is fully verified and active"
+      : "Please verify your email to access all features"
+    }
+  </Typography>
+</Box>
         </CardContent>
       </Card>
     </Box>
